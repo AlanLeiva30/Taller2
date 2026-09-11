@@ -1,0 +1,73 @@
+name: vl221407desafio2-demo
+
+# Demostración local independiente. No se conecta al SQL Server de Windows.
+# Iniciar con: docker compose -f compose.demo.yaml up --build -d
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Define una contraseña para la base de demostración en MSSQL_SA_PASSWORD}
+      SQLCMDPASSWORD: ${MSSQL_SA_PASSWORD:?Define MSSQL_SA_PASSWORD}
+    volumes:
+      - demo-sql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -C -b -l 5 -Q 'SELECT 1' > /dev/null"]
+      interval: 10s
+      timeout: 8s
+      start_period: 40s
+      retries: 15
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  sql-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      SQLCMDPASSWORD: ${MSSQL_SA_PASSWORD:?Define MSSQL_SA_PASSWORD}
+    volumes:
+      - ./docs/Desafio2DB.sql:/scripts/Desafio2DB.sql:ro
+      - ./docs/DatosEjemplo.sql:/scripts/DatosEjemplo.sql:ro
+    entrypoint: ["/opt/mssql-tools18/bin/sqlcmd"]
+    command: ["-S", "sqlserver", "-U", "sa", "-C", "-b", "-l", "30", "-f", "65001", "-i", "/scripts/Desafio2DB.sql", "-i", "/scripts/DatosEjemplo.sql"]
+    restart: "no"
+
+  api:
+    image: vl221407desafio2-api:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      sql-init:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:${API_PORT:-5081}:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Swagger__Enabled: "true"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=Desafio2DB;User Id=sa;Password=${MSSQL_SA_PASSWORD:?Define MSSQL_SA_PASSWORD};Encrypt=True;TrustServerCertificate=True;Connect Timeout=10;"
+      AutoMapper__LicenseKey: ${AUTOMAPPER_LICENSE_KEY:-}
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  demo-sql-data:

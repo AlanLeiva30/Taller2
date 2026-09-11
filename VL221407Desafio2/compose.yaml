@@ -1,0 +1,30 @@
+name: vl221407desafio2
+
+# API conectada a un SQL Server externo. No crea tablas ni modifica el servidor.
+services:
+  api:
+    image: vl221407desafio2-api:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:${API_PORT:-5081}:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Swagger__Enabled: "true"
+      ConnectionStrings__DefaultConnection: ${DB_CONNECTION_STRING:?Define DB_CONNECTION_STRING con una conexión SQL accesible desde Docker}
+      AutoMapper__LicenseKey: ${AUTOMAPPER_LICENSE_KEY:-}
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

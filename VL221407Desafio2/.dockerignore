@@ -1,0 +1,17 @@
+**/bin
+**/obj
+.vs
+.git
+.env
+.env.*
+!.env.example
+**/*.user
+**/*.suo
+**/*.log
+**/*.bak
+**/*.mdf
+**/*.ldf
+**/*.pfx
+TestResults
+outputs
+work

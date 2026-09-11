@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../Entities/VL221407Desafio2.Entities.csproj" />
+    <ProjectReference Include="../Common/VL221407Desafio2.Common.csproj" />
+    <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.9" />
+  </ItemGroup>
+</Project>

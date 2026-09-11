@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="Common/VL221407Desafio2.Common.csproj" />
+  <Project Path="Entities/VL221407Desafio2.Entities.csproj" />
+  <Project Path="DTOs/VL221407Desafio2.DTOs.csproj" />
+  <Project Path="DAL/VL221407Desafio2.DAL.csproj" />
+  <Project Path="BL/VL221407Desafio2.BL.csproj" />
+  <Project Path="API/VL221407Desafio2.API.csproj" />
+</Solution>

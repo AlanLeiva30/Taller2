@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../Entities/VL221407Desafio2.Entities.csproj" />
+    <ProjectReference Include="../DTOs/VL221407Desafio2.DTOs.csproj" />
+    <ProjectReference Include="../Common/VL221407Desafio2.Common.csproj" />
+    <ProjectReference Include="../DAL/VL221407Desafio2.DAL.csproj" />
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
+  </ItemGroup>
+</Project>
